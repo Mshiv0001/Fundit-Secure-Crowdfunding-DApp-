@@ -436,7 +436,7 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     title: 'SolarDAO: Peer-to-Peer Clean Energy Microgrid',
     description: 'Decentralized local solar generation and battery storage with automated smart contract settlement across 120 residential households.',
     category: 'Climate & Energy',
-    imageUrl: '/solar-microgrid-cover.svg',
+    imageUrl: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=1200&q=80',
     creator: '0x48B...3390',
     creatorName: 'Rajiv Mehta',
     creatorHandle: '@rajiv_solar',
