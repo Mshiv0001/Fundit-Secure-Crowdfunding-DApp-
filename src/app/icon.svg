@@ -1,0 +1,70 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGrad" x1="20%" y1="90%" x2="90%" y2="10%">
+      <stop offset="0%" stopColor="#06B6D4" />
+      <stop offset="45%" stopColor="#0EA5E9" />
+      <stop offset="75%" stopColor="#10B981" />
+      <stop offset="100%" stopColor="#00E599" />
+    </linearGradient>
+    <filter id="bloom" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="glow" />
+      <feMerge>
+        <feMergeNode in="glow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shield & Growth Arrow with Glow (100% transparent background) -->
+  <g filter="url(#bloom)">
+    <!-- Shield Glass Fill -->
+    <path
+      d="M 100 26 C 122 36 148 38 164 50 C 164 96 156 136 100 176 C 44 136 36 96 36 50 C 52 38 78 36 100 26 Z"
+      fill="rgba(6, 182, 212, 0.12)"
+    />
+
+    <!-- Outer Shield Stroke -->
+    <path
+      d="M 100 26 C 122 36 148 38 164 50 C 164 96 156 136 100 176 C 44 136 36 96 36 50 C 52 38 78 36 100 26 Z"
+      stroke="url(#shieldGrad)"
+      stroke-width="7.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <!-- Inner Shield Accent Line -->
+    <path
+      d="M 100 40 C 118 48 138 50 150 60 C 150 94 142 124 100 158 C 58 124 50 94 50 60 C 62 50 82 48 100 40 Z"
+      stroke="url(#shieldGrad)"
+      stroke-width="2.5"
+      stroke-opacity="0.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <!-- Zigzag Trend Line -->
+    <path
+      d="M 52 134 L 88 88 L 108 116 L 158 56"
+      stroke="url(#shieldGrad)"
+      stroke-width="8.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M 52 134 L 88 88 L 108 116 L 158 56"
+      stroke="#E0F7FF"
+      stroke-width="3.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <!-- Arrow Head -->
+    <polygon
+      points="150,42 178,36 172,64 163,54 158,58"
+      fill="url(#shieldGrad)"
+      stroke="#E0F7FF"
+      stroke-width="1.5"
+      stroke-linejoin="round"
+    />
+  </g>
+</svg>

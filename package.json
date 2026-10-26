@@ -1,0 +1,33 @@
+{
+  "name": "fund-it",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "compile": "hardhat compile",
+    "test": "hardhat test"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.3",
+    "ethers": "^6.13.4",
+    "lucide-react": "^0.453.0",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "hardhat": "^2.22.13",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.5.3"
+  }
+}
