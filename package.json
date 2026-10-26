@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "compile": "hardhat compile",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "deploy:sepolia": "hardhat run scripts/deploy-sepolia.js --network sepolia",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.3",
@@ -25,6 +27,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
+    "dotenv": "^18.0.9",
     "hardhat": "^2.22.13",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",

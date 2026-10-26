@@ -111,3 +111,22 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 - **Live MetaMask Mode**:  
   Click the **MetaMask** button in the navbar to connect any real EVM browser wallet (Localhost 8545, Sepolia, or Mainnet).
+
+---
+
+## Deploy to Sepolia and Vercel
+
+1. Copy `.env.example` to `.env` and set `SEPOLIA_RPC_URL` plus the private key for a **dedicated Sepolia-only wallet**. Never commit `.env` or use a mainnet wallet key.
+2. Fund that wallet with Sepolia ETH, then run:
+   ```bash
+   npm run deploy:sepolia
+   ```
+   This deploys the factory and writes its address and ABIs to `src/contracts/deployedContracts.json`.
+3. In Vercel, import this GitHub repository. Add these environment variables for Production and Preview:
+   ```text
+   NEXT_PUBLIC_CHAIN_ID=11155111
+   NEXT_PUBLIC_FACTORY_ADDRESS=<factory address printed by the deployment script>
+   ```
+4. Deploy from Vercel. Users must switch MetaMask to Sepolia before using live mode.
+
+The sandbox remains available for demonstrations. In MetaMask mode, campaign creation, pledges, refunds, milestone proposals, votes, and disbursements use the configured on-chain contracts.

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Campaign, SimulatedAccount, BackerTier, MilestoneProposal, RewardTier } from '@/types';
 import confetti from 'canvas-confetti';
+import { connectLiveWallet, createLiveCampaign, executeLive, loadLiveCampaigns, pledgeLive, proposeLive, refundLive, voteLive } from '@/lib/liveContracts';
 
 interface Web3ContextType {
   isDemoMode: boolean;
@@ -741,30 +742,22 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const currentAddress = isDemoMode ? activeAccount.address : (realAccount || '0x000...0000');
   const ethBalance = isDemoMode ? activeAccount.ethBalance : realBalance;
 
-  // Connect MetaMask
+  const refreshLiveCampaigns = async (account?: string) => {
+    const onChainCampaigns = await loadLiveCampaigns(account || realAccount || undefined);
+    setCampaigns(onChainCampaigns);
+  };
+
+  // Connect MetaMask and load campaigns from the configured contract factory.
   const connectMetaMask = async () => {
-    if (typeof window !== 'undefined' && (window as any).ethereum) {
-      try {
-        const accounts = await (window as any).ethereum.request({
-          method: 'eth_requestAccounts'
-        });
-        if (accounts.length > 0) {
-          setRealAccount(accounts[0]);
-          setIsDemoMode(false);
-          // Query balance
-          const balHex = await (window as any).ethereum.request({
-            method: 'eth_getBalance',
-            params: [accounts[0], 'latest']
-          });
-          const ethVal = (parseInt(balHex, 16) / 1e18).toFixed(4);
-          setRealBalance(ethVal);
-        }
-      } catch (err: any) {
-        console.error('MetaMask connection error:', err);
-      }
-    } else {
-      alert('MetaMask or Web3 wallet extension not detected. Running seamlessly in Sandbox Simulation mode!');
-      setIsDemoMode(true);
+    try {
+      const wallet = await connectLiveWallet();
+      setRealAccount(wallet.address);
+      setRealBalance(Number(wallet.balance).toFixed(4));
+      setIsDemoMode(false);
+      await refreshLiveCampaigns(wallet.address);
+    } catch (err: any) {
+      console.error('MetaMask connection error:', err);
+      alert(err?.message || 'Unable to connect to MetaMask.');
     }
   };
 
@@ -781,6 +774,11 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     if (val < 0.01) {
       return { success: false, message: 'Minimum pledge is 0.01 ETH for Supporter Tier.' };
+    }
+
+    if (!isDemoMode) {
+      try { await pledgeLive(campaignId, ethAmount); await refreshLiveCampaigns(); return { success: true, message: 'Pledge confirmed on Sepolia.' }; }
+      catch (err: any) { return { success: false, message: err?.shortMessage || err?.message || 'Pledge failed.' }; }
     }
 
     // Determine tier & bonus
@@ -845,6 +843,10 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Claim trustless pull refund
   const claimRefund = async (campaignId: string) => {
+    if (!isDemoMode) {
+      try { await refundLive(campaignId); await refreshLiveCampaigns(); return { success: true, message: 'Refund confirmed on Sepolia.' }; }
+      catch (err: any) { return { success: false, message: err?.shortMessage || err?.message || 'Refund failed.' }; }
+    }
     let refundAmount = '0.00';
     setCampaigns(prev =>
       prev.map(c => {
@@ -883,6 +885,11 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     proofUrl: string,
     requestedEth: string
   ) => {
+    if (!isDemoMode) {
+      try { await proposeLive(campaignId, title, description, proofUrl, requestedEth); await refreshLiveCampaigns(); return { success: true, message: 'Milestone proposal confirmed on Sepolia.' }; }
+      catch (err: any) { return { success: false, message: err?.shortMessage || err?.message || 'Proposal failed.' }; }
+    }
+
     const amountNum = parseFloat(requestedEth);
     if (!title || !description || isNaN(amountNum) || amountNum <= 0) {
       return { success: false, message: 'Please provide valid milestone details and ETH request.' };
@@ -924,6 +931,10 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Cast quadratic vote on proposal
   const castVote = async (campaignId: string, proposalId: number, support: boolean) => {
+    if (!isDemoMode) {
+      try { await voteLive(campaignId, proposalId, support); await refreshLiveCampaigns(); return { success: true, message: 'Vote confirmed on Sepolia.' }; }
+      catch (err: any) { return { success: false, message: err?.shortMessage || err?.message || 'Vote failed.' }; }
+    }
     const powerMultiplier = activeAccount.permissions?.quadraticPowerMultiplier || 1;
     let votePower = Math.round(10 * powerMultiplier);
     setCampaigns(prev =>
@@ -952,12 +963,16 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return {
       success: true,
-      message: `Cast quadratic vote ${support ? 'FOR' : 'AGAINST'} with ${votePower} quadratic voting power (√tokens)!`
+      message: `Cast quadratic vote ${support ? 'FOR' : 'AGAINST'} with ${votePower} quadratic voting power (sqrt(tokens))!`
     };
   };
 
   // Execute milestone disbursement
   const executeMilestone = async (campaignId: string, proposalId: number) => {
+    if (!isDemoMode) {
+      try { await executeLive(campaignId, proposalId); await refreshLiveCampaigns(); return { success: true, message: 'Milestone execution confirmed on Sepolia.' }; }
+      catch (err: any) { return { success: false, message: err?.shortMessage || err?.message || 'Execution failed.' }; }
+    }
     let releasedAmount = '0.0';
     setCampaigns(prev =>
       prev.map(c => {
@@ -1017,6 +1032,11 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     }[];
     rewardTiers?: RewardTier[];
   }) => {
+    if (!isDemoMode) {
+      try { await createLiveCampaign(data); await refreshLiveCampaigns(); return { success: true, message: 'Campaign deployed on Sepolia.' }; }
+      catch (err: any) { return { success: false, message: err?.shortMessage || err?.message || 'Campaign deployment failed.' }; }
+    }
+
     const goalNum = parseFloat(data.goalAmount) || 5.0;
 
     const initialProposals: MilestoneProposal[] = data.milestones && data.milestones.length > 0
